@@ -32,6 +32,14 @@ doc.css('td.code').each do |td|
   emoji << [codepoints, name]
 end
 
+h1 = doc.at_css('h1')
+if h1 && h1.text =~ /Full Emoji List, v(.+)/
+  version = $1.strip
+else
+  raise "unable to get version from #{h1.inspect}"
+end
+
+puts "pub const VERSION: &str = \"#{version}\";"
 puts "pub static EMOJI: [[&str; 2]; #{emoji.size}] = ["
 emoji.each do |codepoints, name|
   puts "    [\"#{codepoints}\", \"#{name}\"],"

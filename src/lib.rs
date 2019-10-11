@@ -1,3 +1,4 @@
+pub const VERSION: &str = "12.0";
 pub static EMOJI: [[&str; 2]; 1719] = [
     ["\u{1F600}", "grinning face"],
     ["\u{1F603}", "grinning face with big eyes"],
