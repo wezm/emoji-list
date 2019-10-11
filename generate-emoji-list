@@ -39,9 +39,15 @@ else
   raise "unable to get version from #{h1.inspect}"
 end
 
+puts "use crate::Emoji;\n"
 puts "pub const VERSION: &str = \"#{version}\";"
-puts "pub static EMOJI: [[&str; 2]; #{emoji.size}] = ["
+puts "pub static EMOJI: [Emoji; #{emoji.size}] = ["
 emoji.each do |codepoints, name|
-  puts "    [\"#{codepoints}\", \"#{name}\"],"
+  if name =~ /^flag: /
+    flags = 'Emoji::FLAG_FLAG'
+  else
+    flags = 0
+  end
+  puts "    Emoji { codepoints: \"#{codepoints}\", name: \"#{name}\", flags: #{flags} },"
 end
 puts "];"

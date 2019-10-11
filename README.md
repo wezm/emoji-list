@@ -4,4 +4,4 @@ A list of all emoji generated from Unicode data.
 
 ## Regenerating
 
-    ./generate-emoji-list > src/lib.rs
+    ./generate-emoji-list > src/data.rs
