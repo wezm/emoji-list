@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+require 'nokogiri'
+require 'open-uri'
+
+CACHE_FILE='full-emoji-list.html'
+FULL_EMOJI_LIST='https://unicode.org/emoji/charts/full-emoji-list.html'
+
+unless File.exists?(CACHE_FILE)
+  $stderr.puts "#{CACHE_FILE} doesn't exist, downloading"
+  File.open(CACHE_FILE, 'w') do |file|
+    open(FULL_EMOJI_LIST) do |list|
+      IO.copy_stream(list, file)
+    end
+  end
+  $stderr.puts "download done, wrote #{CACHE_FILE}"
+end
+
+doc = Nokogiri::HTML(File.read(CACHE_FILE), nil, 'utf-8')
+
+emoji = []
+doc.css('td.code').each do |td|
+  codepoints = td.text.strip.split.map do |codepoint|
+    if codepoint =~ /^U\+([0-9A-F]+)$/
+      "\\u{#{$1}}"
+    else
+      raise "#{codepoint} did not match regex"
+    end
+  end.join
+  name = td.parent.at_css('td.name').text.strip.sub('⊛', '').strip
+
+  emoji << [codepoints, name]
+end
+
+puts "pub static EMOJI: [[&str; 2]; #{emoji.size}] = ["
+emoji.each do |codepoints, name|
+  puts "    [\"#{codepoints}\", \"#{name}\"],"
+end
+puts "];"
